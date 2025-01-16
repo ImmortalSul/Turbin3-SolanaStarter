@@ -30,3 +30,5 @@ const mint = generateSigner(umi);
 })();
 
 //https://solscan.io/token/3Yfef5xKyfNnfUSFjkicVtqQJ6vDofxC66RRdfz3ceV2?cluster=devnet
+//https://explorer.solana.com/address/3Yfef5xKyfNnfUSFjkicVtqQJ6vDofxC66RRdfz3ceV2?cluster=devnet
+
