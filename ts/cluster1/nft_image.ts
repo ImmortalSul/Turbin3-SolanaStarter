@@ -30,6 +30,6 @@ umi.use(signerIdentity(signer));
         console.log("Your image URI: ", myUri);
     }
     catch(error) {
-        console.log("Oops.. Something went wrong", error);
+        console.log("Oops.. Something went wrong lol", error);
     }
 })();
