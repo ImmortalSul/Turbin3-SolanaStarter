@@ -10,19 +10,42 @@ const commitment: Commitment = "confirmed";
 const connection = new Connection("https://api.devnet.solana.com", commitment);
 
 // Mint address
-const mint = new PublicKey("<mint address>");
+const mint = new PublicKey("APnuP9a4j1V4xyLZxkAooFAPQ5dcDriux6kJHLW2SgxH");
 
 // Recipient address
-const to = new PublicKey("<receiver address>");
+const to = new PublicKey("AECgSpfrxmn75JV2MpenyxXJHn74ik5bUztax46A5xo5");
 
 (async () => {
     try {
         // Get the token account of the fromWallet address, and if it does not exist, create it
+        const fromWallet = await getOrCreateAssociatedTokenAccount(
+            connection,
+            keypair,
+            mint,
+            keypair.publicKey
+          );
 
         // Get the token account of the toWallet address, and if it does not exist, create it
+        const toWallet = await getOrCreateAssociatedTokenAccount(
+            connection,
+            keypair,
+            mint,
+            to
+          );
 
         // Transfer the new token to the "toTokenAccount" we just created
+        const tx = await transfer(
+            connection,
+            keypair,
+            fromWallet.address,
+            toWallet.address,
+            keypair.publicKey,
+            1e6
+          );
     } catch(e) {
         console.error(`Oops, something went wrong: ${e}`)
     }
 })();
+
+
+//https://solscan.io/tx/3iUcaHd539hNhtRcLY4CbBg14yC1TfhSx7cWTqrjVJuoGqqKyvZ89KydKjyGbDZS4ur2R18TbHkfANmSnkDsKzrs?cluster=devnet
