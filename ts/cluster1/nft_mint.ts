@@ -16,11 +16,17 @@ umi.use(mplTokenMetadata())
 const mint = generateSigner(umi);
 
 (async () => {
-    // let tx = ???
-    // let result = await tx.sendAndConfirm(umi);
-    // const signature = base58.encode(result.signature);
+    let tx = await createNft(umi, {mint: mint,
+        sellerFeeBasisPoints: percentAmount(5),
+        name: "Ruggin",
+        uri: "https://devnet.irys.xyz/45VvYfnSXLz86YWSzwMLPup87GP57ZC276DRhAiqmeCm",
+    })
+    let result = await tx.sendAndConfirm(umi);
+    const signature = base58.encode(result.signature);
     
-    // console.log(`Succesfully Minted! Check out your TX here:\nhttps://explorer.solana.com/tx/${signature}?cluster=devnet`)
+    console.log(`Succesfully Minted! Check out your TX here:\nhttps://explorer.solana.com/tx/${signature}?cluster=devnet`)
 
     console.log("Mint Address: ", mint.publicKey);
 })();
+
+//https://solscan.io/token/3Yfef5xKyfNnfUSFjkicVtqQJ6vDofxC66RRdfz3ceV2?cluster=devnet
