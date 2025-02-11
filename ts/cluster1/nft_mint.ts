@@ -1,34 +1,53 @@
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults"
-import { createSignerFromKeypair, signerIdentity, generateSigner, percentAmount } from "@metaplex-foundation/umi"
-import { createNft, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
+import {
+  createSignerFromKeypair,
+  signerIdentity,
+  generateSigner,
+  percentAmount,
+} from '@metaplex-foundation/umi';
+import {
+  createNft,
+  mplTokenMetadata,
+} from '@metaplex-foundation/mpl-token-metadata';
 
-import wallet from "../wba-wallet.json"
-import base58 from "bs58";
+import wallet from '../keypair.json';
+import base58 from 'bs58';
 
-const RPC_ENDPOINT = "https://api.devnet.solana.com";
+const RPC_ENDPOINT = 'https://api.devnet.solana.com';
 const umi = createUmi(RPC_ENDPOINT);
 
 let keypair = umi.eddsa.createKeypairFromSecretKey(new Uint8Array(wallet));
 const myKeypairSigner = createSignerFromKeypair(umi, keypair);
 umi.use(signerIdentity(myKeypairSigner));
-umi.use(mplTokenMetadata())
+umi.use(mplTokenMetadata());
 
 const mint = generateSigner(umi);
 
 (async () => {
-    let tx = await createNft(umi, {mint: mint,
-        sellerFeeBasisPoints: percentAmount(5),
-        name: "Ruggin",
-        uri: "https://devnet.irys.xyz/45VvYfnSXLz86YWSzwMLPup87GP57ZC276DRhAiqmeCm",
-    })
-    let result = await tx.sendAndConfirm(umi);
-    const signature = base58.encode(result.signature);
-    
-    console.log(`Succesfully Minted! Check out your TX here:\nhttps://explorer.solana.com/tx/${signature}?cluster=devnet`)
+  let tx = await createNft(umi, {
+    mint, //nftSigner
+    name: 'Turbin3 Test Token',
+    symbol: 'TTT', //not mandatory
+    uri: 'https://devnet.irys.xyz/DnGqFXSNNCYCHXtAnFmpKmGZurZP1Shd4KbxLtEcPWTV', //get this from running nft_metadata.ts and getting the link
+    sellerFeeBasisPoints: percentAmount(10),
+  });
+  let result = await tx.sendAndConfirm(umi);
+  const signature = base58.encode(result.signature);
 
-    console.log("Mint Address: ", mint.publicKey);
+  console.log(
+    `Succesfully Minted! Check out your TX here:\nhttps://explorer.solana.com/tx/${signature}?cluster=devnet`
+  );
+
+  console.log('Mint Address: ', mint.publicKey);
 })();
 
-//https://solscan.io/token/3Yfef5xKyfNnfUSFjkicVtqQJ6vDofxC66RRdfz3ceV2?cluster=devnet
-//https://explorer.solana.com/address/3Yfef5xKyfNnfUSFjkicVtqQJ6vDofxC66RRdfz3ceV2?cluster=devnet
+/*
+Minting the NFT process
+1- Upload the image as a generic file and get the image URI
+2- Build the metadata JSON structure and upload it to get the metadata URI
+3- Mint the NFT using the createNFT function (pass umi and then an object with the mint, name, symbol, uri, and sellerFeeBasisPoints)
+Check Metaplex docs for more info
 
+//https://explorer.solana.com/tx/jbZ7odYkw95HMJmuHAKQ2hWpCwAhQSmeXj3PEKdQkzyLgxDEzifKFBUrU4GphgP6MTWPaEn7sz7Pwca6kMqbqrV?cluster=devnet
+//mint address: AE1rrd19g79MnyP1YyfritjuE51mch45WZSJFmDx2kpG
+*/

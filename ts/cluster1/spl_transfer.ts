@@ -1,51 +1,55 @@
-import { Commitment, Connection, Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js"
-import wallet from "../wba-wallet.json"
-import { getOrCreateAssociatedTokenAccount, transfer } from "@solana/spl-token";
+import {
+  Commitment,
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+} from '@solana/web3.js';
+import wallet from '../keypair.json';
+import { getOrCreateAssociatedTokenAccount, transfer } from '@solana/spl-token';
 
 // We're going to import our keypair from the wallet file
 const keypair = Keypair.fromSecretKey(new Uint8Array(wallet));
 
 //Create a Solana devnet connection
-const commitment: Commitment = "confirmed";
-const connection = new Connection("https://api.devnet.solana.com", commitment);
+const commitment: Commitment = 'confirmed';
+const connection = new Connection('https://api.devnet.solana.com', commitment);
 
 // Mint address
-const mint = new PublicKey("APnuP9a4j1V4xyLZxkAooFAPQ5dcDriux6kJHLW2SgxH");
+const mint = new PublicKey('FRQSzCo85iszRUPB1uVX7KZ7A4GxSs6g63s1fz4xVedP');
 
 // Recipient address
-const to = new PublicKey("AECgSpfrxmn75JV2MpenyxXJHn74ik5bUztax46A5xo5");
+const to = new PublicKey('7FYu8ivFMcC2KDERfxwgmqqH3Zv5MtZeTnWgQVFE8oBe');
 
 (async () => {
-    try {
-        // Get the token account of the fromWallet address, and if it does not exist, create it
-        const fromWallet = await getOrCreateAssociatedTokenAccount(
-            connection,
-            keypair,
-            mint,
-            keypair.publicKey
-          );
+  try {
+    // Get the token account of the fromWallet address, and if it does not exist, create it
+    const fromAccount = await getOrCreateAssociatedTokenAccount(
+      connection,
+      keypair,
+      mint,
+      keypair.publicKey
+    );
+    // Get the token account of the toWallet address, and if it does not exist, create it
+    const toAccount = await getOrCreateAssociatedTokenAccount(
+      connection,
+      keypair,
+      mint,
+      to
+    );
+    // Transfer the new token to the "toTokenAccount" we just created
 
-        // Get the token account of the toWallet address, and if it does not exist, create it
-        const toWallet = await getOrCreateAssociatedTokenAccount(
-            connection,
-            keypair,
-            mint,
-            to
-          );
+    const transferSig = await transfer(
+      connection,
+      keypair,
+      fromAccount.address,
+      toAccount.address,
+      keypair.publicKey,
+      Number(1_000_000n)
+    );
 
-        // Transfer the new token to the "toTokenAccount" we just created
-        const tx = await transfer(
-            connection,
-            keypair,
-            fromWallet.address,
-            toWallet.address,
-            keypair.publicKey,
-            1e6
-          );
-    } catch(e) {
-        console.error(`Oops, something went wrong: ${e}`)
-    }
+    console.log(`Your transfer txid: ${transferSig}`);
+  } catch (e) {
+    console.error(`Oops, something went wrong: ${e}`);
+  }
 })();
-
-
-//https://solscan.io/tx/3iUcaHd539hNhtRcLY4CbBg14yC1TfhSx7cWTqrjVJuoGqqKyvZ89KydKjyGbDZS4ur2R18TbHkfANmSnkDsKzrs?cluster=devnet

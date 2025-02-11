@@ -1,29 +1,41 @@
-import { Keypair, PublicKey, Connection, Commitment } from "@solana/web3.js";
+import { Keypair, PublicKey, Connection, Commitment } from '@solana/web3.js';
 import { getOrCreateAssociatedTokenAccount, mintTo } from '@solana/spl-token';
-import wallet from "../wba-wallet.json"
+import wallet from '../keypair.json';
 
 // Import our keypair from the wallet file
 const keypair = Keypair.fromSecretKey(new Uint8Array(wallet));
 
 //Create a Solana devnet connection
-const commitment: Commitment = "confirmed";
-const connection = new Connection("https://api.devnet.solana.com", commitment);
+const commitment: Commitment = 'confirmed';
+const connection = new Connection('https://api.devnet.solana.com', commitment);
 
 const token_decimals = 1_000_000n;
 
 // Mint address
-const mint = new PublicKey("APnuP9a4j1V4xyLZxkAooFAPQ5dcDriux6kJHLW2SgxH");
+const mint = new PublicKey('FRQSzCo85iszRUPB1uVX7KZ7A4GxSs6g63s1fz4xVedP');
 
 (async () => {
-    try {
-        // Create an ATA
-        const ata = await getOrCreateAssociatedTokenAccount(connection, keypair, mint, keypair.publicKey);
-        console.log(`Your ata is: ${ata.address.toBase58()}`);
+  try {
+    // Create an ATA
+    const ata = await getOrCreateAssociatedTokenAccount(
+      connection,
+      keypair,
+      mint,
+      keypair.publicKey
+    );
+    console.log(`Your ata is: ${ata.address.toBase58()}`);
 
-        // Mint to ATA
-        const mintTx = await mintTo(connection, keypair, mint, ata.address, keypair.publicKey,696969969669);
-        console.log(`Your mint txid: ${mintTx}`);
-    } catch(error) {
-        console.log(`Oops, something went wrong: ${error}`)
-    }
-})()
+    // Mint to ATA
+    const mintTx = await mintTo(
+      connection,
+      keypair,
+      mint,
+      ata.address,
+      keypair.publicKey,
+      BigInt(100) * token_decimals
+    );
+    console.log(`Your mint txid: ${mintTx}`);
+  } catch (error) {
+    console.log(`Oops, something went wrong: ${error}`);
+  }
+})();
